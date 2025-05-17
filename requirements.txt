@@ -6,4 +6,5 @@ scipy
 jupyter
 plotly
 notebook
-windrose 
+windrose
+ipykernel 
