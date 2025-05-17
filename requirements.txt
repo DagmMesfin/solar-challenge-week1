@@ -7,3 +7,4 @@ jupyter
 plotly
 notebook
 windrose 
+ipykernel
