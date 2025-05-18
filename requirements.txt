@@ -8,3 +8,4 @@ plotly
 notebook
 windrose 
 ipykernel
+
