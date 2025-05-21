@@ -32,6 +32,25 @@ Analyze environmental measurements to provide data-driven recommendations for **
 * Boxplots, statistical summaries, and ANOVA test results.
 * Identified key insights and highlighted solar potential differences.
 
+### Task 4: Interactive Dashboard
+
+* Developed an interactive dashboard using Streamlit to visualize the solar data analysis:
+  * Country-specific analysis with detailed metrics and visualizations
+  * Cross-country comparison tools
+  * Interactive filters and controls
+  * Real-time data exploration capabilities
+
+#### Dashboard Screenshots
+
+##### Country Analysis View
+![Country Analysis Dashboard](dashboard_screenshots/Country_Analysis%20(1).png)
+
+##### Detailed Metrics
+![Detailed Metrics](dashboard_screenshots/Country_Analysis%20(3).png)
+
+##### Cross-Country Comparison
+![Cross-Country Analysis](dashboard_screenshots/Cross_Country_Analysis%20(1).png)
+
 ## 🚀 Getting Started
 
 Follow the steps below to set up and reproduce the development environment.
