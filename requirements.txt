@@ -8,4 +8,5 @@ plotly
 notebook
 windrose 
 ipykernel
+streamlit
 
