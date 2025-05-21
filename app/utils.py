@@ -94,13 +94,8 @@ def create_correlation_matrix(df, columns):
     )
     return fig
 
-def create_scatter_with_trendline(df, x_col, y_col):
-    """Create scatter plot with trendline"""
-    x = df[x_col].values
-    y = df[y_col].values
-    mask = ~np.isnan(x) & ~np.isnan(y)
-    slope, intercept, r_value, p_value, std_err = stats.linregress(x[mask], y[mask])
-    
+def create_scatter_plot(df, x_col, y_col):
+    """Create scatter plot"""
     fig = go.Figure()
     fig.add_trace(go.Scatter(
         x=df[x_col],
@@ -113,16 +108,6 @@ def create_scatter_with_trendline(df, x_col, y_col):
         )
     ))
     
-    x_trend = np.array([x[mask].min(), x[mask].max()])
-    y_trend = slope * x_trend + intercept
-    fig.add_trace(go.Scatter(
-        x=x_trend,
-        y=y_trend,
-        mode='lines',
-        name=f'Trendline (R² = {r_value**2:.3f})',
-        line=dict(color='red', width=2)
-    ))
-    
     fig.update_layout(
         title=f"{x_col} vs {y_col}",
         xaxis_title=x_col,
@@ -130,8 +115,7 @@ def create_scatter_with_trendline(df, x_col, y_col):
         showlegend=True,
         height=500
     )
-    
-    return fig, r_value, p_value, slope, intercept
+    return fig
 
 def create_box_plot(comp_df, metric, countries):
     """Create box plot for distribution analysis"""
@@ -238,5 +222,97 @@ def create_daytime_averages_plot(daytime_avg, metric):
         xaxis_title="Country",
         yaxis_title=f"Average {metric}",
         showlegend=False
+    )
+    return fig
+
+def create_means_comparison(df, x_col, y_col):
+    """Create a bar chart comparing means of selected variables"""
+    means = df[[x_col, y_col]].mean()
+    
+    fig = go.Figure()
+    fig.add_trace(go.Bar(
+        x=means.index,
+        y=means.values,
+        text=means.values.round(2),
+        textposition='auto',
+        marker_color=['#1f77b4', '#ff7f0e']
+    ))
+    
+    fig.update_layout(
+        title=f"Mean Values Comparison",
+        xaxis_title="Variable",
+        yaxis_title="Mean Value",
+        showlegend=False,
+        height=400
+    )
+    return fig
+
+def create_density_scatter(df, x_col, y_col):
+    """Create an efficient density scatter plot using hexbinning"""
+    # Sample data if it's too large (keep 10% of points)
+    if len(df) > 10000:
+        df = df.sample(n=10000, random_state=42)
+    
+    # Create hexbin plot
+    fig = go.Figure()
+    
+    # Add hexbin trace
+    fig.add_trace(go.Histogram2d(
+        x=df[x_col],
+        y=df[y_col],
+        colorscale='Viridis',
+        nbinsx=50,
+        nbinsy=50,
+        showscale=True,
+        colorbar=dict(title='Count')
+    ))
+    
+    fig.update_layout(
+        title=f"Density Plot: {x_col} vs {y_col}",
+        xaxis_title=x_col,
+        yaxis_title=y_col,
+        height=500
+    )
+    return fig
+
+def create_kde_plot(df, x_col, y_col):
+    """Create a 2D KDE plot showing the density distribution of points"""
+    # Sample data if it's too large (keep 5% of points)
+    if len(df) > 5000:
+        df = df.sample(n=5000, random_state=42)
+    
+    # Create KDE plot
+    fig = go.Figure()
+    
+    # Add KDE trace
+    fig.add_trace(go.Histogram2dContour(
+        x=df[x_col],
+        y=df[y_col],
+        colorscale='Viridis',
+        nbinsx=30,
+        nbinsy=30,
+        showscale=True,
+        colorbar=dict(title='Density')
+    ))
+    
+    # Add a few actual points for reference
+    sample_points = df.sample(n=100, random_state=42)
+    fig.add_trace(go.Scatter(
+        x=sample_points[x_col],
+        y=sample_points[y_col],
+        mode='markers',
+        marker=dict(
+            size=4,
+            color='white',
+            opacity=0.3
+        ),
+        showlegend=False
+    ))
+    
+    fig.update_layout(
+        title=f"Density Distribution: {x_col} vs {y_col}",
+        xaxis_title=x_col,
+        yaxis_title=y_col,
+        height=500
     )
     return fig 

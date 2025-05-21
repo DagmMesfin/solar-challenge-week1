@@ -12,12 +12,14 @@ from utils import (
     style_dataframe,
     load_all_data,
     create_correlation_matrix,
-    create_scatter_with_trendline,
     create_box_plot,
     create_time_series_plot,
     create_monthly_plot,
     create_cleaning_impact_plot,
-    create_daytime_averages_plot
+    create_daytime_averages_plot,
+    create_density_scatter,
+    create_means_comparison,
+    create_kde_plot
 )
 
 # Page config
@@ -44,6 +46,7 @@ data_paths = {
 #     "Sierra Leone": "data/sierraleone_clean.csv",
 #     "Togo": "data/togo_clean.csv"
 # }
+
 
 # Load all data at once
 dfs = load_all_data(data_paths)
@@ -87,7 +90,7 @@ if section == "Country Analysis":
         metrics = st.multiselect(
             "Select metrics to display",
             ["GHI", "DNI", "DHI", "Tamb", "RH"],
-            default=["GHI", "DNI", "DHI"]
+            default=["GHI", "DHI"]
         )
         
         if metrics:
@@ -223,22 +226,13 @@ if section == "Country Analysis":
         col_y = st.selectbox("Y-axis", [col for col in corr_columns if col != col_x], 
                            index=1 if col_x != corr_columns[1] else 0)
         
-        # Create scatter plot with trendline
-        fig, r_value, p_value, slope, intercept = create_scatter_with_trendline(df_filtered, col_x, col_y)
+        # Create KDE plot
+        fig = create_kde_plot(df_filtered, col_x, col_y)
         st.plotly_chart(fig, use_container_width=True)
         
-        # Display correlation statistics
-        st.subheader("Correlation Statistics")
-        stats_df = pd.DataFrame({
-            'Metric': ['Correlation Coefficient', 'R-squared', 'P-value', 'Slope', 'Intercept'],
-            'Value': [
-                f"{r_value:.3f}",
-                f"{r_value**2:.3f}",
-                f"{p_value:.3e}",
-                f"{slope:.3f}",
-                f"{intercept:.3f}"
-            ]
-        })
+        # Display summary statistics
+        st.subheader("Summary Statistics")
+        stats_df = df_filtered[[col_x, col_y]].agg(['mean', 'std', 'min', 'max']).round(2)
         st.dataframe(style_dataframe(stats_df))
 
     elif analysis_type == "Advanced Analysis":
